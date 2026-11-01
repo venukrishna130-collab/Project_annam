@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PROJECT ANNAM – Demo</title>
+<style>
+:root{--g:#145a45;--gd:#10392c;--o:#f59b3a;--cream:#fff6e6;--bg:#fff;--card:#f3f6ef;--tx:#1d2b25;--mu:#6b7a73;--bd:#d9e0da;--ok:#dcefe3;--warn:#ffe9d0;--bad:#fde0dc;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101914;--card:#18251e;--tx:#e6efe9;--mu:#9bb0a5;--bd:#2c3d34;--cream:#2a2418;--ok:#1d3a2c;--warn:#3d2e18;--bad:#472220;--g:#2f8a6a}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx);line-height:1.45}
+header{background:var(--gd);color:#fff;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+header b{font-size:18px}header small{display:block;font-size:10px;opacity:.8}
+nav{display:flex;flex-wrap:wrap;gap:4px;margin-left:auto}
+nav button{background:none;border:0;color:#fff;opacity:.8;padding:6px 8px;cursor:pointer;font-size:13px;border-radius:6px}
+nav button.on,nav button:hover{opacity:1;background:#ffffff22}
+main{max-width:980px;margin:0 auto;padding:16px}
+h1{margin:6px 0;color:var(--g);font-size:26px}h2{color:var(--g);font-size:19px;margin:4px 0 8px}
+.mu{color:var(--mu);font-size:13px}
+.hero{background:var(--cream);border-radius:16px;padding:22px;margin:12px 0}
+.hero h1{font-size:30px;max-width:460px}
+.btn{background:var(--g);color:#fff;border:0;border-radius:9px;padding:10px 16px;font-weight:700;cursor:pointer;font-size:13px;margin:4px 6px 4px 0}
+.btn.o{background:var(--o);color:#1d1d1d}.btn.s{padding:6px 10px;font-size:12px}.btn:disabled{opacity:.4}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px}
+.card.step{border-left:5px solid var(--g)}
+label{display:block;font-size:12px;font-weight:700;margin:8px 0 3px}
+input,select{width:100%;padding:9px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--ok);color:var(--g)}
+.tag.w{background:var(--warn);color:#9a5a10}.tag.b{background:var(--bad);color:#b3261e}
+.note{background:var(--ok);padding:10px 12px;border-radius:8px;font-weight:600;font-size:13px;margin:10px 0}
+.err{color:#b3261e;font-size:13px;font-weight:600;margin-top:6px}
+.row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.stat{font-size:28px;font-weight:800;color:var(--g)}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:8px 6px;border-bottom:1px solid var(--bd);text-align:left}
+.bar{height:10px;border-radius:6px;background:var(--bd);overflow:hidden}.bar i{display:block;height:100%;background:var(--g)}
+.track{display:flex;justify-content:space-between;margin:18px 0}.track div{text-align:center;flex:1;font-size:11px;font-weight:700;color:var(--mu)}
+.track span{display:block;width:34px;height:34px;line-height:34px;border-radius:50%;background:var(--bd);margin:0 auto 4px;color:#fff}
+.track .d{color:var(--g)}.track .d span{background:var(--g)}
+.chart{display:flex;gap:10px;align-items:flex-end;height:120px}.chart i{flex:1;background:var(--g);border-radius:6px 6px 0 0}
+.hide{display:none}
+</style></head><body>
+<header><div><b>🍲 PROJECT ANNAM</b><small>Every Meal Matters. Every Donation Counts.</small></div><nav id="nav"></nav></header>
+<main id="app"></main>
+<script>
+const NOW=()=>Date.now(),H=36e5;
+const SEED=()=>[
+{id:'ANM-DEMO-1024',food:'Vegetable rice',cat:'Cooked meal',portions:80,rem:80,prep:NOW()-2*H,dl:NOW()+3*H,cold:false,al:'None known',km:2.5,status:'Posted',log:[['Posted','Donor created listing']]},
+{id:'ANM-DEMO-1023',food:'Bread packs',cat:'Bakery',portions:45,rem:45,prep:NOW()-1*H,dl:NOW()+4*H,cold:false,al:'Gluten, nuts',km:4,status:'Posted',log:[['Posted','Donor created listing']]},
+{id:'ANM-DEMO-1022',food:'Seasonal fruit boxes',cat:'Produce',portions:30,rem:30,prep:NOW()-3*H,dl:NOW()+20*H,cold:true,al:'Unknown',km:6,status:'Posted',log:[['Posted','Donor created listing']]},
+{id:'ANM-DEMO-1021',food:'Curd rice',cat:'Cooked meal',portions:25,rem:25,prep:NOW()-5*H,dl:NOW()+0.5*H,cold:true,al:'Dairy',km:3,status:'Posted',log:[['Posted','Donor created listing']]}];
+let D=SEED(),role=null,view='home',sel=null,msg='',need=60,avoid='nuts',seq=1025,orgs=[['Hope Community Kitchen','Community kitchen','Pending review'],['Helping Hands Network','NGO','Documents needed'],['Sample Shelter One','Shelter','DEMO / NOT VERIFIED']];
+const T=t=>new Date(t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+const $=s=>document.querySelector(s);
+const pages=[['home','Home'],['role','Choose role'],['dist','Distributor'],['recv','Receiver'],['track','Tracking'],['route','Route'],['impact','Impact'],['admin','Admin']];
+function go(v,id){view=v;if(id)sel=id;msg='';render()}
+function score(d){ // eligibility gates first
+ const hrs=(d.dl-NOW())/H,al=d.al.toLowerCase();
+ if(!d.id||d.rem<=0)return{x:'No portions remaining'};
+ if(hrs<=0)return{x:'Pickup deadline passed'};
+ if(avoid!=='none'&&al.includes(avoid))return{x:'Allergen conflict ('+avoid+') – sent for review'};
+ const S=al==='unknown'?60:90,Q=Math.max(0,100-Math.abs(d.rem-need)/need*100),Tm=hrs>=3?100:hrs>=2?80:hrs>=1?60:40,Di=Math.max(0,100-d.km*10),C=100,Hs=d.cold?50:100;
+ const f=[S,Q,Tm,Di,C,Hs],w=[.25,.2,.2,.15,.1,.1];
+ return{f,s:Math.round(f.reduce((a,v,i)=>a+v*w[i],0))};
+}
+function nav(){$('#nav').innerHTML=pages.map(p=>`<button class="${view===p[0]?'on':''}" onclick="go('${p[0]}')">${p[1]}</button>`).join('')}
+const V={
+home:()=>`<div class="hero"><span class="tag w">FOOD RESCUE • COMMUNITY • ACTION</span><h1>Turn surplus food into a meaningful connection.</h1><p class="mu">Post available food, find eligible receivers, and follow every donation from listing to delivery.</p><button class="btn" onclick="role='dist';go('dist')">I WANT TO DONATE FOOD</button><button class="btn o" onclick="role='recv';go('recv')">I NEED FOOD DONATIONS</button></div>
+<div class="grid"><div class="card step"><b>1. Share</b><p class="mu">Donors post quantity, preparation time, pickup deadline and handling details.</p></div><div class="card step"><b>2. Match</b><p class="mu">The platform checks eligibility first, then ranks suitable receivers.</p></div><div class="card step"><b>3. Deliver</b><p class="mu">Authorised users update pickup and delivery progress.</p></div></div>
+<div class="note">Design mockup / demo prototype – not a deployed food distribution service. It does not certify food safety.</div>`,
+role:()=>`<h1>Choose your role</h1><div class="grid"><div class="card"><h2>Food Distributor</h2><p class="mu">Restaurant, caterer, hotel or event with suitable surplus food.</p><button class="btn" onclick="role='dist';go('reg')">Continue as distributor ›</button></div><div class="card"><h2>Food Receiver</h2><p class="mu">NGO, shelter or community kitchen needing food.</p><button class="btn o" onclick="role='recv';go('reg')">Continue as receiver ›</button></div></div><p class="mu">Demo note: role selection is a mockup; real use needs secure registration.</p>`,
+reg:()=>{const dn=role==='dist';return`<h1>${dn?'Distributor':'Receiver'} Registration</h1><div class="card"><label>${dn?'Business / donor name':'Organisation name'}</label><input id="r1" placeholder="${dn?'e.g., Green Leaf Catering':'e.g., Hope Community Kitchen'}"><label>Organisation type</label><select><option>${dn?'Restaurant':'NGO'}</option><option>${dn?'Caterer':'Shelter'}</option><option>${dn?'Event':'Community kitchen'}</option></select><label>Contact person</label><input placeholder="Authorised representative"><label>General location</label><input placeholder="Area / locality only"><p class="mu">Privacy: exact addresses and phone numbers must not appear on public pages.</p><button class="btn" onclick="if(!$('#r1').value.trim()){msg='Name is required.';render();return}msg='';alert('Submitted for review (demo). Using authorised demo profile.');go('${dn?'dist':'recv'}')">SUBMIT FOR REVIEW ›</button><div class="err">${msg}</div></div>`},
+dist:()=>{const c=s=>D.filter(d=>s.includes(d.status)).length;return`<h1>Distributor Dashboard</h1><div class="grid"><div class="card"><span class="mu">ACTIVE LISTINGS</span><div class="stat">${c(['Posted'])}</div></div><div class="card"><span class="mu">ACCEPTED / IN PROGRESS</span><div class="stat">${c(['Accepted','Pickup Arranged'])}</div></div><div class="card"><span class="mu">DELIVERED</span><div class="stat">${c(['Delivered'])}</div></div></div>
+<div class="row"><h2>Recent donations</h2><button class="btn" onclick="go('post')">+ POST A NEW DONATION</button></div><div class="card" style="overflow-x:auto"><table><tr><th>Ref</th><th>Food</th><th>Portions</th><th>Pickup by</th><th>Status</th></tr>${D.map(d=>`<tr><td><a href="#" onclick="go('track','${d.id}');return false">${d.id.slice(-4)}</a></td><td>${d.food}</td><td>${d.rem}/${d.portions}</td><td>${T(d.dl)}</td><td><span class="tag">${d.status}</span></td></tr>`).join('')}</table><p class="mu">DEMO DATA – totals calculated from records in this session.</p></div>`},
+post:()=>`<h1>Post a Food Donation</h1><div class="card"><div class="grid"><div><label>Food category</label><select id="p1"><option>Cooked meal</option><option>Bakery</option><option>Produce</option></select></div><div><label>Description</label><input id="p2" placeholder="Ingredients and food type"></div><div><label>Quantity (portions)</label><input id="p3" type="number" min="1" placeholder="e.g., 80"></div><div><label>Prepared (hours ago)</label><input id="p4" type="number" min="0" step="0.5" placeholder="e.g., 2"></div><div><label>Pickup deadline (hours from now)</label><input id="p5" type="number" step="0.5" placeholder="e.g., 3"></div><div><label>Storage / handling</label><select id="p6"><option value="0">Room temperature</option><option value="1">Needs cold storage</option></select></div><div><label>Known allergens (blank = unknown)</label><input id="p7" placeholder="e.g., nuts, gluten"></div><div><label>Pickup locality (km from receiver)</label><input id="p8" type="number" min="0" step="0.5" placeholder="e.g., 3"></div></div><button class="btn" onclick="postIt()">SAVE & CHECK ELIGIBILITY</button><span class="tag w">NOT A FOOD-SAFETY CERTIFICATE</span><div class="err">${msg}</div></div>`,
+recv:()=>{const L=D.filter(d=>d.status==='Posted').map(d=>({d,r:score(d)}));const ok=L.filter(x=>x.r.s!=null).sort((a,b)=>b.r.s-a.r.s),ex=L.filter(x=>x.r.x);
+ return`<h1>Receiver Dashboard</h1><div class="card"><div class="grid"><div><label>Meals needed</label><input type="number" value="${need}" min="1" onchange="need=+this.value||1;render()"></div><div><label>Avoid allergen</label><select onchange="avoid=this.value;render()">${['none','nuts','gluten','dairy'].map(a=>`<option ${a===avoid?'selected':''}>${a}</option>`).join('')}</select></div></div><p class="mu">Receiver: Hope Community Kitchen (DEMO / NOT VERIFIED)</p></div>
+${msg?`<div class="note">${msg}</div>`:''}<h2>Eligible offers (ranked)</h2>${ok.map(x=>`<div class="card" style="margin-bottom:10px"><div class="row"><div><b>${x.d.food}</b><div class="mu">${x.d.rem} portions • Pickup by ${T(x.d.dl)} • ${x.d.km} km • Allergens: ${x.d.al}</div></div><span class="tag">${x.r.s}/100 MATCH</span></div><button class="btn s" onclick="go('match','${x.d.id}')">VIEW DETAILS ›</button></div>`).join('')||'<p class="mu">No eligible offers right now.</p>'}
+${ex.length?`<h2>Excluded / flagged</h2>${ex.map(x=>`<div class="card" style="margin-bottom:8px"><b>${x.d.food}</b> <span class="tag b">${x.r.x}</span></div>`).join('')}`:''}
+<p class="mu">Eligibility checks happen before ranking. A high score cannot override failed safety, deadline or eligibility checks.</p>`},
+match:()=>{const d=D.find(x=>x.id===sel),r=score(d),n=['Food / dietary suitability','Quantity fit','Deadline feasibility','Estimated distance','Transport capacity','Storage capability'],w=[25,20,20,15,10,10];
+ if(!r.f)return`<div class="err">Not eligible: ${r.x}</div><button class="btn" onclick="go('recv')">Back</button>`;
+ return`<h1>${d.food}</h1><div class="mu">${d.id} • ${d.cat} • Prepared ${T(d.prep)} • Pickup by ${T(d.dl)} • ${d.cold?'Needs cold storage':'Room temperature'} • Allergens: ${d.al}</div>
+<div class="card" style="margin-top:10px"><span class="tag w">ILLUSTRATIVE – RULE-BASED, NOT MACHINE LEARNING</span><div class="stat">${r.s} / 100</div>${r.f.map((v,i)=>`<div class="row" style="margin-top:6px"><span>${n[i]} (${w[i]}%)</span><b>${Math.round(v)}</b></div><div class="bar"><i style="width:${v}%"></i></div>`).join('')}<p class="mu">Score = 0.25S + 0.20Q + 0.20T + 0.15D + 0.10C + 0.10H</p></div>
+<div class="card" style="margin-top:10px"><label>Portions to accept (max ${d.rem})</label><input id="ac" type="number" min="1" max="${d.rem}" value="${Math.min(d.rem,need)}"><button class="btn" onclick="accept('${d.id}')">ACCEPT OFFER</button><button class="btn o" onclick="go('recv')">Back</button><div class="err">${msg}</div></div>`},
+track:()=>{const d=D.find(x=>x.id===sel)||D[0],st=['Posted','Accepted','Pickup Arranged','Delivered'],i=st.indexOf(d.status);
+ return`<h1>Donation Tracking</h1><div class="row"><select onchange="sel=this.value;render()" style="max-width:320px">${D.map(x=>`<option value="${x.id}" ${x.id===d.id?'selected':''}>${x.id} – ${x.food}</option>`).join('')}</select><span class="tag w">DEMO RECORD</span></div>
+<div class="card" style="margin-top:10px"><b>${d.id}</b> • ${d.food} • ${d.rem}/${d.portions} portions left • Pickup by ${T(d.dl)}<div class="track">${st.map((s,k)=>`<div class="${k<=i?'d':''}"><span>${k+1}</span>${s.toUpperCase()}</div>`).join('')}</div>
+${i===1?`<button class="btn" onclick="adv('${d.id}','Pickup Arranged','Collection coordinated')">ARRANGE PICKUP</button>`:''}${i===2?`<label style="font-weight:400"><input type="checkbox" id="cf" style="width:auto"> Handover physically confirmed</label><button class="btn" onclick="if(!$('#cf').checked){alert('Confirm the handover first.');return}adv('${d.id}','Delivered','Handover confirmed')">MARK DELIVERED</button>`:''}
+<h2>Status history</h2>${d.log.map(l=>`<div class="mu">${l[2]||''} <b>${l[0]}</b> – ${l[1]}</div>`).join('')}<p class="mu">Who can update: authorised roles only; each change recorded with time. No private details shown publicly.</p></div>`},
+route:()=>`<h1>Route Planning</h1><div class="card"><svg viewBox="0 0 400 200" style="width:100%;max-height:260px"><rect width="400" height="200" rx="10" fill="var(--bg)"/><path d="M40 150 L180 60 L320 130" stroke="var(--g)" stroke-width="4" fill="none"/>${[[40,150,'1 Donor kitchen'],[180,60,'2 Community hub'],[320,130,'3 Receiver']].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="12" fill="var(--o)"/><text x="${p[0]}" y="${p[1]-18}" text-anchor="middle" font-size="12" fill="var(--tx)">${p[2]}</text>`).join('')}</svg><span class="tag w">SIMULATED MAP • NOT LIVE NAVIGATION</span><p class="mu">A real version needs a routing provider, restricted API key and privacy controls. Do not use for real collection.</p></div>`,
+impact:()=>{const del=D.filter(d=>d.status==='Delivered'),p=D.reduce((a,d)=>a+d.portions,0);return`<h1>Impact Dashboard</h1><span class="tag w">DEMO DATA</span><div class="grid" style="margin-top:10px"><div class="card"><span class="mu">PORTIONS LISTED</span><div class="stat">${p}</div></div><div class="card"><span class="mu">DONATIONS COMPLETED</span><div class="stat">${del.length}</div></div><div class="card"><span class="mu">RECEIVER PARTNERS</span><div class="stat">${new Set(D.filter(d=>d.status!=='Posted').map(d=>'x')).size}</div></div><div class="card"><span class="mu">PICKUPS ARRANGED</span><div class="stat">${D.filter(d=>['Pickup Arranged','Delivered'].includes(d.status)).length}</div></div></div><div class="card" style="margin-top:12px"><b>Illustrative weekly portions</b><div class="chart">${[40,60,45,90,70,110].map(h=>`<i style="height:${h}px"></i>`).join('')}</div><div class="mu">M T W T F S – fictional values</div></div><p class="mu">Totals above come from this session's records. No real-world impact is claimed.</p>`},
+admin:()=>`<h1>Admin & Verification</h1><span class="tag b">ADMIN ONLY (DEMO)</span><div class="card" style="margin-top:10px"><table><tr><th>Organisation</th><th>Type</th><th>Status</th><th></th></tr>${orgs.map((o,i)=>`<tr><td>${o[0]}</td><td>${o[1]}</td><td>${o[2]}</td><td><button class="btn s" onclick="orgs[${i}][2]='Verified (demo only)';render()">REVIEW ✓</button></td></tr>`).join('')}</table><p class="mu">Real deployment needs secure sign-in, server-side role checks and evidence review.</p></div>`
+};
+function postIt(){const g=i=>$('#p'+i).value.trim(),por=+g(3),pr=g(4),dl=g(5),km=g(8);
+ if(!g(2)||!por||por<1||pr===''||dl===''||km===''){msg='Please fill all required fields (description, portions, prepared time, deadline, locality).';render();return}
+ if(+dl<=0){msg='Pickup deadline must be in the future.';render();return}
+ const d={id:'ANM-DEMO-'+(seq++),food:g(2),cat:g(1),portions:por,rem:por,prep:NOW()-pr*H,dl:NOW()+dl*H,cold:g(6)==='1',al:g(7)||'Unknown',km:+km,status:'Posted',log:[['Posted','Donor created listing',T(NOW())]]};
+ D.unshift(d);msg='';alert('Donation posted! Reference: '+d.id);go('dist')}
+function accept(id){const d=D.find(x=>x.id===id),n=+$('#ac').value;
+ if(d.status!=='Posted'||d.rem<=0){msg='Offer no longer available.';render();return}
+ if(!n||n<1||n>d.rem){msg='Only '+d.rem+' portions are available.';render();return}
+ d.rem-=n;d.status='Accepted';d.log.push(['Accepted','Receiver accepted '+n+' portions',T(NOW())]);go('track',id)}
+function adv(id,s,note){const d=D.find(x=>x.id===id);d.status=s;d.log.push([s,note,T(NOW())]);render()}
+function reset(){D=SEED();seq=1025;role=null;go('home')}
+function render(){nav();$('#app').innerHTML=V[view]()+`<hr style="border:0;border-top:1px solid var(--bd);margin-top:24px"><button class="btn o s" onclick="reset()">↺ Reset demonstration</button> <span class="mu">Demo prototype • sample data only • not a food-safety certificate</span>`}
+render();
+</script></body></html>
